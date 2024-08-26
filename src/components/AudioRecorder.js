@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+
+import React, { useState, useRef } from 'react';
 import './AudioRecorder.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { micOn, micOff } from './Slice';
@@ -8,50 +9,27 @@ const AudioRecorder = () => {
   const dispatch = useDispatch();
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const streamRef = useRef(null);
-  const [audioChunks, setAudioChunks] = useState([]);
-  // useEffect (()=>{
-  //   const temp = async()=>{
-  //     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  //       streamRef.current = stream;
-  //       const recorder = new MediaRecorder(stream);
-  //       setMediaRecorder(recorder);
-  //       setAudioChunks([]); 
-  //       recorder.start();
-  //       if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-  //         mediaRecorder.stop();
-  //         console.log('Recording stopped');
-  //       }
-  //       console.log("streamRef.current = ", streamRef.current)
-  //       if (streamRef.current) {
-  //         streamRef.current.getTracks().forEach(track => track.stop());
-  //         streamRef.current = null;
-  //       }
-    
-  //       setMediaRecorder(null);
-  
-  //   }
-  //   temp()
-  // },[])
+  const audioChunksRef = useRef([]);  
+
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       const recorder = new MediaRecorder(stream);
       setMediaRecorder(recorder);
-      setAudioChunks([]); 
+      audioChunksRef.current = [];  // Reset the ref array
+
       recorder.start();
       dispatch(micOn());
 
-      recorder.ondataavailable = event => {
-
-        setAudioChunks(prevChunks => [...prevChunks, event.data]);
-        console.log("audioChunks ondataavailable => ", audioChunks)
-
+      recorder.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);  // Push directly to the ref array
+        console.log("audioChunksRef.current => ", audioChunksRef.current);
       };
 
       recorder.onstop = () => {
-        console.log("audioChunks => ", audioChunks)
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' }); 
+        console.log("audioChunksRef.current on stop => ", audioChunksRef.current);
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         playAudio(audioBlob);
       };
 
@@ -61,14 +39,12 @@ const AudioRecorder = () => {
     }
   };
 
- 
-
   const stopRecording = () => {
     if (mediaRecorder && mediaRecorder.state !== 'inactive') {
       mediaRecorder.stop();
       console.log('Recording stopped');
     }
-    console.log("streamRef.current = ", streamRef.current)
+
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
@@ -111,4 +87,3 @@ const AudioRecorder = () => {
 };
 
 export default AudioRecorder;
-
