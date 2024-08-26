@@ -1,0 +1,66 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .audio-recorder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    height: 100vh; /* This makes the container full height of the viewport */
+  }
+  
+  .record-button,
+  .stop-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .record-button {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .record-button:hover:not(:disabled) {
+    background-color: #45a049;
+  }
+  
+  .record-button.recording {
+    animation: pulse 1s infinite;
+  }
+  
+  .stop-button {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .stop-button:hover:not(:disabled) {
+    background-color: #da190b;
+  }
+  
+  .record-button:disabled,
+  .stop-button:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+
